@@ -1,0 +1,809 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钟洪辉 — 个人作品集展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        html, body {
+            height: 100%;
+        }
+        body {
+            min-height: 100vh;
+            padding: 30px 30px 30px;
+            display: flex;
+            flex-direction: column;
+            background: #c3c0c0;
+        }
+
+        .title-box {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title-box h1 {
+            color: #222;
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+        .title-box p {
+            color: #666;
+        }
+        .show-wrap {
+            flex: 1;
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            position: relative;
+            transition: all 0.6s ease-in-out;
+            align-items: stretch;
+        }
+        .art-card {
+            flex: 1;
+            width: 100%;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.6s ease-in-out;
+            position: relative;
+            height: 100%;
+        }
+        .art-card.shrink {
+            flex: 0.08 !important;
+            width: 60px !important;
+        }
+        .art-card.shrink .card-main {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .art-card.shrink .shrink-text {
+            opacity: 1;
+        }
+        .art-card.active {
+            flex: 4 !important;
+            height: auto !important;
+        }
+        .shrink-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%) rotate(-90deg);
+            white-space: nowrap;
+            font-size: 16px;
+            color: #333;
+            opacity: 0;
+            transition: 0.4s;
+        }
+        .card-main {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+        /* Before/After 对比滑块 */
+        .compare-slider {
+            width: 100%;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            cursor: col-resize;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 200px;
+        }
+        .compare-slider img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+        }
+        .compare-slider .before-img {
+            z-index: 1;
+        }
+        .compare-slider .after-img {
+            z-index: 2;
+            clip-path: inset(0 50% 0 0);
+        }
+        .compare-slider .divider-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #fff;
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: 0 0 6px rgba(0,0,0,0.4);
+        }
+        .compare-slider .divider-handle {
+            position: absolute;
+            top: 50%;
+            z-index: 4;
+            width: 36px;
+            height: 36px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .compare-slider .divider-handle::before,
+        .compare-slider .divider-handle::after {
+            content: '';
+            display: block;
+            width: 2px;
+            height: 14px;
+            background: #999;
+            margin: 0 2px;
+        }
+        .compare-slider .label-before,
+        .compare-slider .label-after {
+            position: absolute;
+            bottom: 10px;
+            z-index: 3;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .compare-slider .label-before { left: 10px; }
+        .compare-slider .label-after  { right: 10px; }
+        .card-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            color: #666;
+            line-height: 1.7;
+        }
+        .expand-content {
+            display: none;
+            width: 100%;
+            padding: 30px;
+            overflow: visible;
+            height: auto;
+        }
+        .art-card.active .card-main {
+            display: none;
+        }
+        .art-card.active .expand-content {
+            display: block;
+        }
+
+        .expand-content h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #222;
+        }
+        .expand-content h3 {
+            margin: 24px 0 10px;
+            color: #333;
+            font-size: 19px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 6px;
+        }
+        .expand-content h4 {
+            margin: 18px 0 8px;
+            color: #444;
+            font-size: 16px;
+        }
+        .expand-content h5 {
+            margin: 10px 0 6px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .expand-text {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .expand-text strong {
+            color: #222;
+        }
+
+        /* 图片展示 */
+        .img-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .img-item {
+            background: #f9f9f9;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            padding: 10px;
+        }
+        .img-item img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .img-item span {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0 18px;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* PDF */
+        .pdf-box {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        hr {
+            margin: 24px 0 18px;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-box">
+        <h1>钟洪辉 — 个人作品集展示</h1>
+        <p>Shader演示 / DCC工具开发 / 手绘作品集</p>
+    </div>
+
+    <div class="show-wrap">
+        <!-- ==================== 左侧：Shader说明文档 ==================== -->
+        <div class="art-card card-left" data-type="left">
+            <div class="shrink-text">Shader演示</div>
+            <div class="card-main">
+                <div class="compare-slider" data-slider="shader">
+                    <img class="before-img" src="./shader/AFTER.png" alt="BEFORE" draggable="false">
+                    <img class="after-img"  src="./shader/BEFORE.png" alt="AFTER" draggable="false">
+                    <div class="divider-line"></div>
+                    <div class="divider-handle"></div>
+                    <span class="label-before">BEFORE</span>
+                    <span class="label-after">AFTER</span>
+                </div>
+                <div class="card-name">风格化卡通Shader</div>
+                <div class="card-desc">复刻原神风格卡通角色Shader，含Body与Face两套方案，以及创新的ShiverToon冷颤变形效果</div>
+            </div>
+            <div class="expand-content">
+                <button class="close-btn">×</button>
+
+                <p class="expand-text"><em>Shader开发案例</em></p>
+                <h2>风格化卡通shader</h2>
+
+                <!-- ===== GenshinToon_Body ===== -->
+                <h3>GenshinToon_Body</h3>
+                <h4>概述</h4>
+                <p class="expand-text">
+                    复刻原神风格的卡通角色 Shader，包含 <strong>Face</strong> 和 <strong>Body</strong> 两个部分。核心目标是用美术可控的方式实现风格化阴影，而非物理真实的光照。<br>
+                    <strong>技术亮点</strong>：
+                </p>
+                <p class="expand-text">
+                    - <em>Face：SDF 距离场 + 头部方向向量实现左右自动阴影</em><br>
+                    - <em>Body：LightMap（AO + RampID）+ 多材质 Ramp 混合 + 昼夜切换</em>
+                </p>
+
+                <h4>GenshinToon_Body 核心管线</h4>
+                <p class="expand-text">
+                    - <strong>输入</strong>：BaseMap、LightMap（G=AO, A=RampID）、RampTex、顶点色G通道<br>
+                    - <strong>关键算法</strong>：半兰伯特 + AO 混合 → Ramp UV 计算 → RampShadowID 分段采样<br>
+                    - <strong>特色</strong>：支持5级 Ramp 材质切换，美术可通过 LightMap Alpha 和顶点色精细控制阴影风格
+                </p>
+
+                <h4>核心代码片段（RampShadowID）</h4>
+                <div class="code-block">float RampShadowID(float input, float useShadow2, float useShadow3, float useShadow4, float useShadow5, 
+	float shadowValue1, float shadowValue2, float shadowValue3, float shadowValue4, float shadowValue5)
+{
+	// 根据input值将模型分为5个区域
+	float v1 = step(0.6, input) * step(input, 0.8); // 0.6-0.8区域
+	float v2 = step(0.4, input) * step(input, 0.6); // 0.4-0.6区域
+	float v3 = step(0.2, input) * step(input, 0.4); // 0.2-0.4区域
+	float v4 = step(input, 0.2);                    // 0-0.2区域
+
+	// 根据开关控制是否使用不同材质的值
+	float blend12 = lerp(shadowValue1, shadowValue2, useShadow2);
+	float blend15 = lerp(shadowValue1, shadowValue5, useShadow5);
+	float blend13 = lerp(shadowValue1, shadowValue3, useShadow3);
+	float blend14 = lerp(shadowValue1, shadowValue4, useShadow4);
+
+	// 根据区域选择对应的材质值
+	float result = blend12;                // 默认使用材质1或2
+	result = lerp(result, blend15, v1);    // 0.6-0.8区域使用材质5
+	result = lerp(result, blend13, v2);    // 0.4-0.6区域使用材质3
+	result = lerp(result, blend14, v3);    // 0.2-0.4区域使用材质4
+	result = lerp(result, shadowValue1, v4); // 0-0.2区域使用材质1
+
+	return result;
+}</div>
+
+                <h4>shader展示</h4>
+                <h5>投影演示</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/body-半兰伯特+ramp+AO-昼.gif" alt="投影演示">
+                        <span>半兰伯特 + Ramp + AO 投影演示</span>
+                    </div>
+                </div>
+
+                <h5>阴影位置调节</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/body-shadowposition.gif" alt="阴影位置调节">
+                        <span>阴影位置调节</span>
+                    </div>
+                </div>
+
+                <h5>阴影柔和度调节</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/body-shadowsoftness.gif" alt="阴影柔和度调节">
+                        <span>阴影柔和度调节</span>
+                    </div>
+                </div>
+
+                <h5>昼夜切换</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/shader-ramp+ao+昼夜切换.gif" alt="昼夜切换">
+                        <span>昼夜切换（Ramp贴图上下半区）</span>
+                    </div>
+                </div>
+
+                <h5>采样宽度</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/body-rampwidth.gif" alt="采样宽度">
+                        <span>采样宽度调节</span>
+                    </div>
+                </div>
+
+                <h5>ramp分段映射</h5>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/body-ramp分段映射.gif" alt="ramp分段映射">
+                        <span>Ramp分段映射（5级阴影）</span>
+                    </div>
+                </div>
+
+                <!-- ===== GenshinToon_Face ===== -->
+                <h3>GenshinToon_Face 核心实现</h3>
+                <p class="expand-text">
+                    - <strong>输入</strong>：BaseMap、SDF 距离场、ShadowMask、头部方向向量<br>
+                    - <strong>关键算法</strong>：光源方向投影 → 左右侧判断 → SDF 硬边界采样<br>
+                    - <strong>特色</strong>：有效解决面部"死亡光"问题，腮红使用 BaseMap Alpha 通道控制
+                </p>
+
+                <h4>核心代码片段（Face SDF Shadow）</h4>
+                <div class="code-block">half3 LpHeadHorizon = normalize(L - LpU);
+half value = acos(dot(LpHeadHorizon, headRightDir)) / PI;
+half sdf = step(mixValue, mixSdf);   // 硬边界阴影
+sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir)));</div>
+                <p class="expand-text"><em>通过头部方向向量 + SDF 距离场实现左右自动阴影切换，有效避免了传统 Ramp 在面部容易出现的"死亡打光"问题。</em></p>
+
+                <h4>SDF阴影展示</h4>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/face-SDF.gif" alt="SDF阴影展示">
+                        <span>SDF面部阴影投影演示</span>
+                    </div>
+                </div>
+
+                <h4>红晕展示</h4>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/face_blash.gif" alt="红晕展示">
+                        <span>面部红晕（BaseMap Alpha遮罩）</span>
+                    </div>
+                </div>
+
+                <!-- ===== ShiverToon ===== -->
+                <h2>Vibecoding开发shader</h2>
+                <h3>ShiverToon.shader</h3>
+                <h4>概述</h4>
+                <p class="expand-text">
+                    在标准 Toon 着色基础上，创新加入实时冷颤波浪变形效果的卡通角色 Shader。目标是让角色在特定场景下呈现出生动、自然的"受冷发抖"动态表现，同时保持 Toon 风格的美术可控性。
+                </p>
+                <p class="expand-text">
+                    <strong>核心效果</strong>
+                </p>
+                <p class="expand-text">
+                    - <strong>分层冷颤系统</strong>：根据世界空间高度实现脚-腰-头三段不同振幅曲线<br>
+                    - 脉冲包络 + 随机失真：实现间歇性爆发抖动<br>
+                    - <strong>动态几何描边</strong>：Inverted Hull 描边粗细随冷颤波浪相位实时变化<br>
+                    - <strong>轮廓限制</strong>：仅在角色左右侧 Fresnel 边缘区域触发变形，避免面部扭曲
+                </p>
+                <p class="expand-text">
+                    <strong>技术实现</strong>
+                </p>
+                <p class="expand-text">
+                    - 顶点着色器中完成完整冷颤逻辑（Fresnel 检测 + 三段曲线 + 高频微颤）<br>
+                    - 描边 Pass 与主 Pass 共用波浪相位，保证一致性
+                </p>
+                <p class="expand-text">
+                    <strong>演示效果</strong>：<br>
+                    - 冷颤波浪 + 动态描边联动
+                </p>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./shader/shivering3.gif" alt="冷颤波浪">
+                        <span>冷颤波浪 + 动态描边联动</span>
+                    </div>
+                </div>
+
+                <p class="expand-text">核心：冷颤波浪计算（Vert 阶段）</p>
+                <div class="code-block">float mainWave = sin(phase);
+float microWave = sin(phase * 13.0) * 0.22;
+float shapedWave = sign(rawWave) * pow(abs(rawWave), sharpPower);
+
+half ampMult = ApplyAmplitudeCurve(positionWS.y);
+wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
+
+                <p class="expand-text">
+                    <strong>开发说明</strong><br>
+                    <em>GenshinToon 系列主要参考公开教程并深入理解实现。ShiverToon 使用 Vibecoding 生成初始框架，由我负责架构设计、冷颤动画逻辑优化和最终打磨。</em>
+                </p>
+                <p class="expand-text">
+                    <strong>项目意义</strong><br>
+                    <em>这是一个从"静态 Toon"向"动态风格化表现"探索的尝试，锻炼了我在顶点动画、程序化效果和 Shader 性能平衡方面的能力。</em>
+                </p>
+            </div>
+        </div>
+
+        <!-- ==================== 中间：DCC工具说明文档 ==================== -->
+        <div class="art-card card-center" data-type="center">
+            <div class="shrink-text">DCC工具</div>
+            <div class="card-main">
+                <div class="compare-slider" data-slider="maya">
+                    <img class="before-img" src="./maya/MAYA-AFTER.png" alt="BEFORE" draggable="false">
+                    <img class="after-img"  src="./maya/MAYA-BEFORE.png" alt="AFTER" draggable="false">
+                    <div class="divider-line"></div>
+                    <div class="divider-handle"></div>
+                    <span class="label-before">BEFORE</span>
+                    <span class="label-after">AFTER</span>
+                </div>
+                <div class="card-name">DCC工具开发案例</div>
+                <div class="card-desc">Vibecoding驱动的Maya工具开发：namespace清理工具 / Plane-Cube实时变形工具</div>
+            </div>
+            <div class="expand-content">
+                <button class="close-btn">×</button>
+
+                <p class="expand-text"><em>DCC 工具开发案例</em></p>
+                <h2>namespace清理工具</h2>
+                <p class="expand-text"><em>个人效率工具——解决Maya动画资产命名空间混乱的自动化方案</em></p>
+
+                <p class="expand-text"><strong>问题背景</strong></p>
+                <p class="expand-text"><em>在 Maya TA 工作中，频繁的资产交叉引用常导致命名空间混乱：多层嵌套、同名冲突、僵尸命名空间残留，严重影响场景加载和多人协作。</em></p>
+
+                <p class="expand-text"><strong>开发动机</strong></p>
+                <p class="expand-text"><em>离职后，我系统复盘了这些痛点，使用 Vibecoding 工作流独立开发了这款轻量、稳定的命名空间整理工具。</em></p>
+
+                <h3>核心功能与技术亮点</h3>
+                <p class="expand-text">
+                    - <strong>智能扁平化</strong>：递归分析层级树，从深到浅合并父级命名空间<br>
+                    - <strong>安全清理</strong>：通过 <code>referenceQuery</code> 精准区分引用/非引用，失败时回退 <code>moveNamespace</code><br>
+                    - <strong>智能重排序</strong>：根据引用文件 basename 自动编号 + 同步重命名引用节点（<code>heroRN</code>）<br>
+                    - <strong>冲突解决</strong>：<strong>两阶段临时重命名</strong>策略（临时别名 → 最终目标名）<br>
+                    - <strong>生产安全</strong>：自动备份场景 + <code>undoInfo</code> 原子块，一键 Ctrl+Z 回退
+                </p>
+
+                <p class="expand-text"><strong>成果</strong>：将手动清理时间从 10+ 分钟缩短至 3 次点击，在本地复杂场景中稳定运行。</p>
+
+                <h3>bug展示</h3>
+                <p class="expand-text">
+                    - 在资产提交不规范的场景后，有时候会出现命名空间层级不正确、非正确引用资产导致命名空间错误、命名空间排序混乱等情况。
+                </p>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./maya/maya-namespace_error.png" alt="bug展示">
+                        <span>Bug场景：命名空间层级混乱</span>
+                    </div>
+                </div>
+
+                <h3>UI展示</h3>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./maya/QQ_1783930207884.png" alt="UI展示">
+                        <span>工具UI界面（PySide2）</span>
+                    </div>
+                </div>
+
+                <h3>使用演示</h3>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./maya/ns_cleaner.gif" alt="使用演示">
+                        <span>使用演示：一键清理命名空间</span>
+                    </div>
+                </div>
+
+                <h3>代码片段展示</h3>
+                <h4><strong>1. find_referenced_namespaces</strong> —— 精准区分引用与非引用命名空间</h4>
+                <div class="code-block">for ns in user_namespaces:
+    if ns in ref_namespaces:
+        referenced.append(ns)
+    else:
+        nodes_in_ns = cmds.namespaceInfo(ns, listNamespace=True) or []
+        try:
+            # 只要有一个节点被引用，整个命名空间就视为被引用
+            is_referenced = any(
+                cmds.referenceQuery(node, isNodeReferenced=True) 
+                for node in nodes_in_ns
+            )
+        except:
+            is_referenced = False
+            
+        if is_referenced:
+            referenced.append(ns)
+        else:
+            non_referenced.append(ns)</div>
+
+                <hr>
+
+                <h4><strong>2. rename_namespace</strong> —— 安全重命名与冲突处理</h4>
+                <div class="code-block">def rename_namespace(old_ns, new_name, force_unique=True):
+    if old_ns == new_name:
+        return True
+
+    abs_old = f':{old_ns}' if not old_ns.startswith(':') else old_ns
+    target_name = new_name
+    attempt = 0
+
+    while attempt &lt; 20:
+        try:
+            abs_target = f':{target_name}' if not target_name.startswith(':') else target_name
+            cmds.namespace(rename=(abs_old, target_name), force=True)
+            return True
+        except Exception as e:
+            if "already exists" in str(e).lower():
+                if not force_unique:
+                    return False
+                attempt += 1
+                target_name = f"{new_name}{attempt}"
+                continue
+            else:
+                cmds.warning(f"重命名失败 {old_ns} -&gt; {target_name}: {e}")
+                return False
+    return False</div>
+
+                <hr>
+
+                <h4><strong>3. delete_unreferenced_namespaces</strong> —— 安全删除未引用命名空间</h4>
+                <div class="code-block">for ns in sorted(non_referenced, key=lambda x: x.count(':'), reverse=True):
+    abs_ns = f':{ns}' if not ns.startswith(':') else ns
+
+    try:
+        # 主方案：直接合并到根
+        cmds.namespace(removeNamespace=abs_ns, mergeNamespaceWithRoot=True)
+    except:
+        # 备用方案：先移动到根，再删除
+        cmds.namespace(moveNamespace=[abs_ns, ":"], force=True)
+        cmds.namespace(removeNamespace=abs_ns)</div>
+
+                <hr>
+
+                <h4><strong>4. flatten_namespaces</strong> —— 嵌套命名空间扁平化</h4>
+                <div class="code-block">def flatten_namespaces(verbose=False):
+    cmds.undoInfo(openChunk=True)
+    try:
+        while True:
+            # 从深到浅处理
+            parents = [p for p in children_map if p in user_ns]
+            parents.sort(key=lambda x: x.count(':'), reverse=True)
+            
+            for parent in parents:
+                abs_parent = f':{parent}' if not parent.startswith(':') else parent
+                cmds.namespace(removeNamespace=abs_parent, mergeNamespaceWithRoot=True)
+    finally:
+        cmds.undoInfo(closeChunk=True)</div>
+
+                <!-- ===== Plane-Cube Bump工具 ===== -->
+                <h2>Plane-Cube Bump工具</h2>
+                <p class="expand-text"><em><strong>Vibecoding 实践</strong>：AI 辅助开发的 Maya 实时顶点变形工具</em></p>
+
+                <p class="expand-text"><strong>背景</strong></p>
+                <p class="expand-text"><em>探索 AI 辅助 DCC 工具开发的实践项目。通过自然语言描述需求，快速生成并优化出一个实时顶点变形工具。</em></p>
+
+                <p class="expand-text"><strong>功能</strong></p>
+                <p class="expand-text"><em>在 Plane 上放置 Cube 后，当移动 Cube 时，Plane 会实时产生顶点推离变形，确保 Cube 不会穿透表面。核心基于有符号距离场计算。</em></p>
+
+                <p class="expand-text"><strong>技术亮点</strong></p>
+                <p class="expand-text">
+                    - OpenMaya API（<code>MFnMesh.getClosestPointAndNormal</code>）<br>
+                    - QTimer 100ms 轮询 + UI 双向绑定<br>
+                    - 多轮安全校验迭代（<code>_safety_push</code>）
+                </p>
+
+                <p class="expand-text"><strong>成果</strong>：实现了实时、稳定的几何交互效果。</p>
+
+                <h3>关键几何计算点</h3>
+                <p class="expand-text"><em>Fallout = cube的AABB包围盒的空间对角线</em></p>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./maya/QQ_1783950797167.png" alt="关键几何计算点">
+                        <span>关键几何计算：Cube的AABB包围盒对角线</span>
+                    </div>
+                </div>
+
+                <h3>使用演示</h3>
+                <div class="img-grid">
+                    <div class="img-item">
+                        <img src="./maya/bumpcube_Tool.gif" alt="使用演示">
+                        <span>使用演示：实时顶点推离变形</span>
+                    </div>
+                </div>
+
+                <h3>开发方式说明</h3>
+                <p class="expand-text">
+                    两个工具均结合 Vibecoding 工作流开发。我负责<strong>需求定义、架构设计、核心逻辑优化和最终打磨</strong>，通过这个过程系统提升了 Maya Python、OpenMaya 和工具工程能力。
+                </p>
+                <p class="expand-text">
+                    <strong>未来方向</strong>：将 Namespace Cleaner 扩展为完整场景卫生工具集，并继续探索实时几何交互技术。
+                </p>
+            </div>
+        </div>
+
+        <!-- ==================== 右侧：手绘作品集PDF ==================== -->
+        <div class="art-card card-right" data-type="right">
+            <div class="shrink-text">手绘作品集</div>
+            <div class="card-main">
+                <div class="card-top-img" style="overflow:hidden; padding:0;">
+                    <img src="./手绘作品集封面.png" alt="手绘作品集封面" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                </div>
+                <div class="card-name">手绘作品集</div>
+                <div class="card-desc">手绘插画作品合集PDF</div>
+            </div>
+            <div class="expand-content">
+                <button class="close-btn">×</button>
+                <h2>手绘作品集预览</h2>
+                <br>
+                <p class="expand-text"></p>
+                <br>
+                <iframe class="pdf-box" src="./钟洪辉手绘作品集.pdf#zoom=100" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+<script>
+const cards = document.querySelectorAll('.art-card');
+const closeBtns = document.querySelectorAll('.close-btn');
+
+function resetAllCard() {
+    cards.forEach(item => {
+        item.classList.remove('active','shrink');
+    })
+    document.querySelector('.show-wrap').style.alignItems = 'stretch';
+}
+
+cards.forEach(card => {
+    card.addEventListener('click',function(e){
+        if(e.target.classList.contains('close-btn')) return;
+        if(e.target.closest('.compare-slider')) return;
+        resetAllCard();
+        const type = this.dataset.type;
+        this.classList.add('active');
+
+        if(type === 'left'){
+            document.querySelector('.card-center').classList.add('shrink');
+            document.querySelector('.card-right').classList.add('shrink');
+        }else if(type === 'center'){
+            document.querySelector('.card-left').classList.add('shrink');
+            document.querySelector('.card-right').classList.add('shrink');
+        }else if(type === 'right'){
+            document.querySelector('.card-left').classList.add('shrink');
+            document.querySelector('.card-center').classList.add('shrink');
+        }
+    })
+})
+
+closeBtns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        resetAllCard();
+    })
+})
+
+// ===== Before/After 对比滑块 =====
+document.querySelectorAll('.compare-slider').forEach(slider => {
+    const afterImg   = slider.querySelector('.after-img');
+    const line       = slider.querySelector('.divider-line');
+    const handle     = slider.querySelector('.divider-handle');
+    let dragging = false;
+
+    function setSplit(percent) {
+        percent = Math.max(5, Math.min(95, percent));
+        afterImg.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+        line.style.left = percent + '%';
+        handle.style.left = percent + '%';
+    }
+
+    // 初始化到中间
+    setSplit(50);
+
+    function onDown(e) {
+        dragging = true;
+        slider.style.cursor = 'col-resize';
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function onUp() {
+        dragging = false;
+        slider.style.cursor = 'col-resize';
+    }
+
+    function onMove(e) {
+        if (!dragging) return;
+        const rect = slider.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        setSplit((x / rect.width) * 100);
+    }
+
+    handle.addEventListener('mousedown', onDown);
+    handle.addEventListener('touchstart', onDown);
+    slider.addEventListener('mousedown', (e) => {
+        if (e.target === handle) return;
+        dragging = true;
+        const rect = slider.getBoundingClientRect();
+        setSplit(((e.clientX - rect.left) / rect.width) * 100);
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchend', onUp);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onMove);
+});
+</script>
+</body>
+</html>
+
