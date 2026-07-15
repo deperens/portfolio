@@ -310,7 +310,7 @@
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease-in-out;
             position: relative;
         }
         .video-toggle-box:hover {
@@ -330,13 +330,23 @@
             font-size: 14px;
         }
         .video-toggle-box.shrink .video-player-wrap {
-            display: none !important;
+            opacity: 0 !important;
+            max-height: 0 !important;
+            margin-top: 0 !important;
         }
         /* 视频展开容器 */
         .video-player-wrap {
             width: 100%;
+            margin-top: 0;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, max-height 0.3s ease, margin-top 0.3s ease;
+        }
+        .video-player-wrap.open {
+            opacity: 1;
+            max-height: 2000px;
             margin-top: 24px;
-            display: none;
         }
         .local-video {
             width: 100%;
@@ -657,7 +667,7 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
         cmds.undoInfo(closeChunk=True)</div>
                 <!-- ===== Plane-Cube Bump工具 ===== -->
                 <h2>Plane-Cube Bump工具</h2>
-                <p class="expand-text"><em><strong>Vibecoding 实践</strong>：AI 辅助开发的 Maya 实时顶点变形工具</em></p>
+                <p class="expand-text"><em><strong>AI 辅助开发工作流</strong>：我负责需求定义、架构设计和代码审查，具体实现由 AI 协助加速</em></p>
                 <p class="expand-text"><strong>背景</strong></p>
                 <p class="expand-text"><em>探索 AI 辅助 DCC 工具开发的实践项目。通过自然语言描述需求，快速生成并优化出一个实时顶点变形工具。</em></p>
                 <p class="expand-text"><strong>功能</strong></p>
@@ -729,10 +739,10 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                     </video>
                 </div>
             </div>
-            <!-- 特笑作品小框 -->
+            <!-- UE VFX作品小框 -->
             <div class="video-toggle-box" data-video="special">
                 <button class="close-btn video-close-btn" style="display:none;">×</button>
-                <h3>特笑作品</h3>
+                <h3>UE VFX作品</h3>
                 <div class="video-player-wrap">
                     <!-- 本地视频占位，替换src="./special_video.mp4" -->
                     <video class="local-video" controls src="./UEVFXP.mp4">
@@ -830,7 +840,7 @@ const allVideoCloseBtns = document.querySelectorAll('.video-close-btn');
 let activeVideoBox = null;
 
 function closeAllVideos() {
-    allPlayers.forEach(p => p.style.display = 'none');
+    allPlayers.forEach(p => p.classList.remove('open'));
     allVideoCloseBtns.forEach(b => b.style.display = 'none');
     videoBoxes.forEach(b => b.classList.remove('shrink'));
     cards.forEach(c => c.classList.remove('shrink','active'));
@@ -851,24 +861,37 @@ videoBoxes.forEach(box => {
             return;
         }
 
-        // 关闭之前展开的视频（保留卡片收缩状态）
-        if(activeVideoBox){
-            activeVideoBox.querySelector('.video-player-wrap').style.display = 'none';
-            activeVideoBox.querySelector('.video-close-btn').style.display = 'none';
-            activeVideoBox.classList.add('shrink');
-        }
-
-        // 收缩未收缩的卡片
-        cards.forEach(c => { if(!c.classList.contains('shrink')) c.classList.add('shrink'); });
+        // 收缩所有卡片 + 另一个视频卡片
+        cards.forEach(c => c.classList.add('shrink'));
         videoBoxes.forEach(b => { if(b !== this) b.classList.add('shrink'); });
         this.classList.remove('shrink');
-        activeVideoBox = this;
 
-        setTimeout(() => {
-            player.style.display = 'block';
-            closeBtn.style.display = 'block';
-            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 350);
+        if(activeVideoBox){
+            // 有旧视频：先标记，等收缩动画完成后再关旧开新
+            const oldBox = activeVideoBox;
+            activeVideoBox = this;
+            setTimeout(() => {
+                oldBox.querySelector('.video-player-wrap').classList.remove('open');
+                oldBox.querySelector('.video-close-btn').style.display = 'none';
+                oldBox.classList.add('shrink');
+                player.classList.add('open');
+                closeBtn.style.display = 'block';
+                // 再等视频展开动画完成后滚动
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 350);
+            }, 350);
+        } else {
+            // 无旧视频：正常展开
+            activeVideoBox = this;
+            setTimeout(() => {
+                player.classList.add('open');
+                closeBtn.style.display = 'block';
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 350);
+            }, 350);
+        }
     })
 })
 
