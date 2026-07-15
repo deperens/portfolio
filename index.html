@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,6 @@
             flex-direction: column;
             background: #c3c0c0;
         }
-
         .title-box {
             text-align: center;
             margin-bottom: 30px;
@@ -40,7 +39,7 @@
             gap: 25px;
             width: 100%;
             position: relative;
-            transition: all 0.6s ease-in-out;
+            transition: all 0.3s ease-in-out;
             align-items: stretch;
         }
         .art-card {
@@ -51,7 +50,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.6s ease-in-out;
+            transition: all 0.3s ease-in-out;
             position: relative;
             height: 100%;
         }
@@ -189,7 +188,6 @@
         .art-card.active .expand-content {
             display: block;
         }
-
         .expand-content h2 {
             font-size: 24px;
             margin-bottom: 16px;
@@ -212,7 +210,6 @@
             color: #555;
             font-size: 14px;
         }
-
         .expand-text {
             font-size: 15px;
             line-height: 1.9;
@@ -222,7 +219,6 @@
         .expand-text strong {
             color: #222;
         }
-
         /* 图片展示 */
         .img-grid {
             display: grid;
@@ -250,7 +246,6 @@
             color: #666;
             font-weight: bold;
         }
-
         /* 代码块 */
         .code-block {
             background: #1e1e1e;
@@ -264,7 +259,6 @@
             overflow-x: auto;
             white-space: pre;
         }
-
         /* PDF */
         .pdf-box {
             width: 100%;
@@ -272,7 +266,6 @@
             border: 1px solid #ccc;
             border-radius: 10px;
         }
-
         .close-btn {
             position: absolute;
             top: 15px;
@@ -287,11 +280,68 @@
             cursor: pointer;
             z-index: 10;
         }
-
         hr {
             margin: 24px 0 18px;
             border: none;
             border-top: 1px solid #ddd;
+        }
+
+        /* ========== UE视频作品区域样式（修改后：纯文字小框，本地视频） ========== */
+        .video-section {
+            margin-top: 60px;
+            width: 100%;
+        }
+        .video-title {
+            text-align: center;
+            font-size: 26px;
+            color: #222;
+            margin-bottom: 30px;
+        }
+        .video-wrap {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+        }
+        .video-toggle-box {
+            flex: 1;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .video-toggle-box:hover {
+            transform: translateY(-6px);
+        }
+        .video-toggle-box h3 {
+            font-size: 22px;
+            color: #222;
+        }
+        .video-toggle-box.shrink {
+            flex: 0.06 !important;
+            min-width: 50px;
+            padding: 40px 5px;
+        }
+        .video-toggle-box.shrink h3 {
+            writing-mode: vertical-rl;
+            font-size: 14px;
+        }
+        .video-toggle-box.shrink .video-player-wrap {
+            display: none !important;
+        }
+        /* 视频展开容器 */
+        .video-player-wrap {
+            width: 100%;
+            margin-top: 24px;
+            display: none;
+        }
+        .local-video {
+            width: 100%;
+            border-radius: 12px;
+            background: #eee;
         }
     </style>
 </head>
@@ -300,7 +350,6 @@
         <h1>钟洪辉 — 个人作品集展示</h1>
         <p>Shader演示 / DCC工具开发 / 手绘作品集</p>
     </div>
-
     <div class="show-wrap">
         <!-- ==================== 左侧：Shader说明文档 ==================== -->
         <div class="art-card card-left" data-type="left">
@@ -319,10 +368,8 @@
             </div>
             <div class="expand-content">
                 <button class="close-btn">×</button>
-
                 <p class="expand-text"><em>Shader开发案例</em></p>
                 <h2>风格化卡通shader</h2>
-
                 <!-- ===== GenshinToon_Body ===== -->
                 <h3>GenshinToon_Body</h3>
                 <h4>概述</h4>
@@ -334,14 +381,12 @@
                     - <em>Face：SDF 距离场 + 头部方向向量实现左右自动阴影</em><br>
                     - <em>Body：LightMap（AO + RampID）+ 多材质 Ramp 混合 + 昼夜切换</em>
                 </p>
-
                 <h4>GenshinToon_Body 核心管线</h4>
                 <p class="expand-text">
                     - <strong>输入</strong>：BaseMap、LightMap（G=AO, A=RampID）、RampTex、顶点色G通道<br>
                     - <strong>关键算法</strong>：半兰伯特 + AO 混合 → Ramp UV 计算 → RampShadowID 分段采样<br>
                     - <strong>特色</strong>：支持5级 Ramp 材质切换，美术可通过 LightMap Alpha 和顶点色精细控制阴影风格
                 </p>
-
                 <h4>核心代码片段（RampShadowID）</h4>
                 <div class="code-block">float RampShadowID(float input, float useShadow2, float useShadow3, float useShadow4, float useShadow5, 
 	float shadowValue1, float shadowValue2, float shadowValue3, float shadowValue4, float shadowValue5)
@@ -351,23 +396,19 @@
 	float v2 = step(0.4, input) * step(input, 0.6); // 0.4-0.6区域
 	float v3 = step(0.2, input) * step(input, 0.4); // 0.2-0.4区域
 	float v4 = step(input, 0.2);                    // 0-0.2区域
-
 	// 根据开关控制是否使用不同材质的值
 	float blend12 = lerp(shadowValue1, shadowValue2, useShadow2);
 	float blend15 = lerp(shadowValue1, shadowValue5, useShadow5);
 	float blend13 = lerp(shadowValue1, shadowValue3, useShadow3);
 	float blend14 = lerp(shadowValue1, shadowValue4, useShadow4);
-
 	// 根据区域选择对应的材质值
 	float result = blend12;                // 默认使用材质1或2
 	result = lerp(result, blend15, v1);    // 0.6-0.8区域使用材质5
 	result = lerp(result, blend13, v2);    // 0.4-0.6区域使用材质3
 	result = lerp(result, blend14, v3);    // 0.2-0.4区域使用材质4
 	result = lerp(result, shadowValue1, v4); // 0-0.2区域使用材质1
-
 	return result;
 }</div>
-
                 <h4>shader展示</h4>
                 <h5>投影演示</h5>
                 <div class="img-grid">
@@ -376,7 +417,6 @@
                         <span>半兰伯特 + Ramp + AO 投影演示</span>
                     </div>
                 </div>
-
                 <h5>阴影位置调节</h5>
                 <div class="img-grid">
                     <div class="img-item">
@@ -384,7 +424,6 @@
                         <span>阴影位置调节</span>
                     </div>
                 </div>
-
                 <h5>阴影柔和度调节</h5>
                 <div class="img-grid">
                     <div class="img-item">
@@ -392,7 +431,6 @@
                         <span>阴影柔和度调节</span>
                     </div>
                 </div>
-
                 <h5>昼夜切换</h5>
                 <div class="img-grid">
                     <div class="img-item">
@@ -400,7 +438,6 @@
                         <span>昼夜切换（Ramp贴图上下半区）</span>
                     </div>
                 </div>
-
                 <h5>采样宽度</h5>
                 <div class="img-grid">
                     <div class="img-item">
@@ -408,7 +445,6 @@
                         <span>采样宽度调节</span>
                     </div>
                 </div>
-
                 <h5>ramp分段映射</h5>
                 <div class="img-grid">
                     <div class="img-item">
@@ -416,7 +452,6 @@
                         <span>Ramp分段映射（5级阴影）</span>
                     </div>
                 </div>
-
                 <!-- ===== GenshinToon_Face ===== -->
                 <h3>GenshinToon_Face 核心实现</h3>
                 <p class="expand-text">
@@ -424,14 +459,12 @@
                     - <strong>关键算法</strong>：光源方向投影 → 左右侧判断 → SDF 硬边界采样<br>
                     - <strong>特色</strong>：有效解决面部"死亡光"问题，腮红使用 BaseMap Alpha 通道控制
                 </p>
-
                 <h4>核心代码片段（Face SDF Shadow）</h4>
                 <div class="code-block">half3 LpHeadHorizon = normalize(L - LpU);
 half value = acos(dot(LpHeadHorizon, headRightDir)) / PI;
 half sdf = step(mixValue, mixSdf);   // 硬边界阴影
 sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir)));</div>
                 <p class="expand-text"><em>通过头部方向向量 + SDF 距离场实现左右自动阴影切换，有效避免了传统 Ramp 在面部容易出现的"死亡打光"问题。</em></p>
-
                 <h4>SDF阴影展示</h4>
                 <div class="img-grid">
                     <div class="img-item">
@@ -439,7 +472,6 @@ sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir)));</div>
                         <span>SDF面部阴影投影演示</span>
                     </div>
                 </div>
-
                 <h4>红晕展示</h4>
                 <div class="img-grid">
                     <div class="img-item">
@@ -447,7 +479,6 @@ sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir)));</div>
                         <span>面部红晕（BaseMap Alpha遮罩）</span>
                     </div>
                 </div>
-
                 <!-- ===== ShiverToon ===== -->
                 <h2>shader玩具开发</h2>
                 <h3>ShiverToon.shader</h3>
@@ -481,15 +512,12 @@ sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir)));</div>
                         <span>冷颤波浪 + 动态描边联动</span>
                     </div>
                 </div>
-
                 <p class="expand-text">核心：冷颤波浪计算（Vert 阶段）</p>
                 <div class="code-block">float mainWave = sin(phase);
 float microWave = sin(phase * 13.0) * 0.22;
 float shapedWave = sign(rawWave) * pow(abs(rawWave), sharpPower);
-
 half ampMult = ApplyAmplitudeCurve(positionWS.y);
 wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
-
                 <p class="expand-text">
                     <strong>开发说明</strong><br>
                     <em>GenshinToon 系列主要参考公开教程并深入理解实现。ShiverToon 使用GenshinToon同样的基础渲染管线，由我负责架构设计、冷颤动画逻辑优化和最终打磨。</em>
@@ -500,7 +528,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                 </p>
             </div>
         </div>
-
         <!-- ==================== 中间：DCC工具说明文档 ==================== -->
         <div class="art-card card-center" data-type="center">
             <div class="shrink-text">DCC工具</div>
@@ -518,17 +545,13 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
             </div>
             <div class="expand-content">
                 <button class="close-btn">×</button>
-
                 <p class="expand-text"><em>DCC 工具开发案例</em></p>
                 <h2>namespace清理工具</h2>
                 <p class="expand-text"><em>个人效率工具——解决Maya动画资产命名空间混乱的自动化方案</em></p>
-
                 <p class="expand-text"><strong>问题背景</strong></p>
                 <p class="expand-text"><em>在 Maya TA 工作中，频繁的资产交叉引用常导致命名空间混乱：多层嵌套、同名冲突、僵尸命名空间残留，严重影响场景加载和多人协作。</em></p>
-
                 <p class="expand-text"><strong>开发动机</strong></p>
                 <p class="expand-text"><em>离职后，我系统复盘了这些痛点，独立开发了这款轻量、稳定的命名空间整理工具。</em></p>
-
                 <h3>核心功能与技术亮点</h3>
                 <p class="expand-text">
                     - <strong>智能扁平化</strong>：递归分析层级树，从深到浅合并父级命名空间<br>
@@ -537,9 +560,7 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                     - <strong>冲突解决</strong>：<strong>两阶段临时重命名</strong>策略（临时别名 → 最终目标名）<br>
                     - <strong>生产安全</strong>：自动备份场景 + <code>undoInfo</code> 原子块，一键 Ctrl+Z 回退
                 </p>
-
                 <p class="expand-text"><strong>成果</strong>：将手动清理时间从 10+ 分钟缩短至 3 次点击，在本地复杂场景中稳定运行。</p>
-
                 <h3>bug展示</h3>
                 <p class="expand-text">
                     - 在资产提交不规范的场景后，有时候会出现命名空间层级不正确、非正确引用资产导致命名空间错误、命名空间排序混乱等情况。
@@ -550,7 +571,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                         <span>Bug场景：命名空间层级混乱</span>
                     </div>
                 </div>
-
                 <h3>UI展示</h3>
                 <div class="img-grid">
                     <div class="img-item">
@@ -558,7 +578,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                         <span>工具UI界面（PySide2）</span>
                     </div>
                 </div>
-
                 <h3>使用演示</h3>
                 <div class="img-grid">
                     <div class="img-item">
@@ -566,7 +585,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                         <span>使用演示：一键清理命名空间</span>
                     </div>
                 </div>
-
                 <h3>代码片段展示</h3>
                 <h4><strong>1. find_referenced_namespaces</strong> —— 精准区分引用与非引用命名空间</h4>
                 <div class="code-block">for ns in user_namespaces:
@@ -587,18 +605,14 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
             referenced.append(ns)
         else:
             non_referenced.append(ns)</div>
-
                 <hr>
-
                 <h4><strong>2. rename_namespace</strong> —— 安全重命名与冲突处理</h4>
                 <div class="code-block">def rename_namespace(old_ns, new_name, force_unique=True):
     if old_ns == new_name:
         return True
-
     abs_old = f':{old_ns}' if not old_ns.startswith(':') else old_ns
     target_name = new_name
     attempt = 0
-
     while attempt &lt; 20:
         try:
             abs_target = f':{target_name}' if not target_name.startswith(':') else target_name
@@ -615,13 +629,10 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                 cmds.warning(f"重命名失败 {old_ns} -&gt; {target_name}: {e}")
                 return False
     return False</div>
-
                 <hr>
-
                 <h4><strong>3. delete_unreferenced_namespaces</strong> —— 安全删除未引用命名空间</h4>
                 <div class="code-block">for ns in sorted(non_referenced, key=lambda x: x.count(':'), reverse=True):
     abs_ns = f':{ns}' if not ns.startswith(':') else ns
-
     try:
         # 主方案：直接合并到根
         cmds.namespace(removeNamespace=abs_ns, mergeNamespaceWithRoot=True)
@@ -629,9 +640,7 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
         # 备用方案：先移动到根，再删除
         cmds.namespace(moveNamespace=[abs_ns, ":"], force=True)
         cmds.namespace(removeNamespace=abs_ns)</div>
-
                 <hr>
-
                 <h4><strong>4. flatten_namespaces</strong> —— 嵌套命名空间扁平化</h4>
                 <div class="code-block">def flatten_namespaces(verbose=False):
     cmds.undoInfo(openChunk=True)
@@ -646,26 +655,20 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                 cmds.namespace(removeNamespace=abs_parent, mergeNamespaceWithRoot=True)
     finally:
         cmds.undoInfo(closeChunk=True)</div>
-
                 <!-- ===== Plane-Cube Bump工具 ===== -->
                 <h2>Plane-Cube Bump工具</h2>
                 <p class="expand-text"><em><strong>Vibecoding 实践</strong>：AI 辅助开发的 Maya 实时顶点变形工具</em></p>
-
                 <p class="expand-text"><strong>背景</strong></p>
                 <p class="expand-text"><em>探索 AI 辅助 DCC 工具开发的实践项目。通过自然语言描述需求，快速生成并优化出一个实时顶点变形工具。</em></p>
-
                 <p class="expand-text"><strong>功能</strong></p>
                 <p class="expand-text"><em>在 Plane 上放置 Cube 后，当移动 Cube 时，Plane 会实时产生顶点推离变形，确保 Cube 不会穿透表面。核心基于有符号距离场计算。</em></p>
-
                 <p class="expand-text"><strong>技术亮点</strong></p>
                 <p class="expand-text">
                     - OpenMaya API（<code>MFnMesh.getClosestPointAndNormal</code>）<br>
                     - QTimer 100ms 轮询 + UI 双向绑定<br>
                     - 多轮安全校验迭代（<code>_safety_push</code>）
                 </p>
-
                 <p class="expand-text"><strong>成果</strong>：实现了实时、稳定的几何交互效果。</p>
-
                 <h3>关键几何计算点</h3>
                 <p class="expand-text"><em>Fallout = cube的AABB包围盒的空间对角线</em></p>
                 <div class="img-grid">
@@ -674,7 +677,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                         <span>关键几何计算：Cube的AABB包围盒对角线</span>
                     </div>
                 </div>
-
                 <h3>使用演示</h3>
                 <div class="img-grid">
                     <div class="img-item">
@@ -682,7 +684,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                         <span>使用演示：实时顶点推离变形</span>
                     </div>
                 </div>
-
                 <h3>开发方式说明</h3>
                 <p class="expand-text">
                     两个工具均结合 AI辅助 工作流开发。我负责<strong>需求定义、架构设计、核心逻辑优化和最终打磨</strong>，通过这个过程系统提升了 Maya Python、OpenMaya 和工具工程能力。
@@ -692,7 +693,6 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
                 </p>
             </div>
         </div>
-
         <!-- ==================== 右侧：手绘作品集PDF ==================== -->
         <div class="art-card card-right" data-type="right">
             <div class="shrink-text">手绘作品集</div>
@@ -714,25 +714,53 @@ wave = shapedWave * _ShiverAmplitude * ampMult * sideMask * burstEnvelope;</div>
         </div>
     </div>
 
+    <!-- ========== 底部UE视频作品区域（纯文字小框，本地视频占位） ========== -->
+    <div class="video-section">
+        <h2 class="video-title">UE作品展示</h2>
+        <div class="video-wrap">
+            <!-- UE作品小框 -->
+            <div class="video-toggle-box" data-video="ue">
+                <button class="close-btn video-close-btn" style="display:none;">×</button>
+                <h3>UE作品</h3>
+                <div class="video-player-wrap">
+                    <!-- 本地视频占位，替换src="./ue_video.mp4"为你的本地视频路径 -->
+                    <video class="local-video" controls src="./UEporto.mp4">
+                        你的浏览器不支持视频播放，请更换浏览器
+                    </video>
+                </div>
+            </div>
+            <!-- 特笑作品小框 -->
+            <div class="video-toggle-box" data-video="special">
+                <button class="close-btn video-close-btn" style="display:none;">×</button>
+                <h3>特笑作品</h3>
+                <div class="video-player-wrap">
+                    <!-- 本地视频占位，替换src="./special_video.mp4" -->
+                    <video class="local-video" controls src="./UEVFXP.mp4">
+                        你的浏览器不支持视频播放，请更换浏览器
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
 const cards = document.querySelectorAll('.art-card');
 const closeBtns = document.querySelectorAll('.close-btn');
-
 function resetAllCard() {
     cards.forEach(item => {
         item.classList.remove('active','shrink');
     })
     document.querySelector('.show-wrap').style.alignItems = 'stretch';
 }
-
 cards.forEach(card => {
     card.addEventListener('click',function(e){
         if(e.target.classList.contains('close-btn')) return;
         if(e.target.closest('.compare-slider')) return;
+        // 关闭所有已展开的视频
+        closeAllVideos();
         resetAllCard();
         const type = this.dataset.type;
         this.classList.add('active');
-
         if(type === 'left'){
             document.querySelector('.card-center').classList.add('shrink');
             document.querySelector('.card-right').classList.add('shrink');
@@ -745,49 +773,40 @@ cards.forEach(card => {
         }
     })
 })
-
 closeBtns.forEach(btn=>{
     btn.addEventListener('click',()=>{
         resetAllCard();
     })
 })
-
 // ===== Before/After 对比滑块 =====
 document.querySelectorAll('.compare-slider').forEach(slider => {
     const afterImg   = slider.querySelector('.after-img');
     const line       = slider.querySelector('.divider-line');
     const handle     = slider.querySelector('.divider-handle');
     let dragging = false;
-
     function setSplit(percent) {
         percent = Math.max(5, Math.min(95, percent));
         afterImg.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
         line.style.left = percent + '%';
         handle.style.left = percent + '%';
     }
-
-    // 初始化到中间
     setSplit(50);
-
     function onDown(e) {
         dragging = true;
         slider.style.cursor = 'col-resize';
         e.preventDefault();
         e.stopPropagation();
     }
-
     function onUp() {
         dragging = false;
         slider.style.cursor = 'col-resize';
     }
-
     function onMove(e) {
         if (!dragging) return;
         const rect = slider.getBoundingClientRect();
         const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
         setSplit((x / rect.width) * 100);
     }
-
     handle.addEventListener('mousedown', onDown);
     handle.addEventListener('touchstart', onDown);
     slider.addEventListener('mousedown', (e) => {
@@ -803,7 +822,62 @@ document.querySelectorAll('.compare-slider').forEach(slider => {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('touchmove', onMove);
 });
+
+// ===== 视频卡片展开/收起 =====
+const videoBoxes = document.querySelectorAll('.video-toggle-box');
+const allPlayers = document.querySelectorAll('.video-player-wrap');
+const allVideoCloseBtns = document.querySelectorAll('.video-close-btn');
+let activeVideoBox = null;
+
+function closeAllVideos() {
+    allPlayers.forEach(p => p.style.display = 'none');
+    allVideoCloseBtns.forEach(b => b.style.display = 'none');
+    videoBoxes.forEach(b => b.classList.remove('shrink'));
+    cards.forEach(c => c.classList.remove('shrink','active'));
+    activeVideoBox = null;
+}
+
+videoBoxes.forEach(box => {
+    box.addEventListener('click', function(e) {
+        if(e.target.tagName === 'VIDEO') return;
+        if(e.target.classList.contains('video-close-btn')) return;
+
+        const player = this.querySelector('.video-player-wrap');
+        const closeBtn = this.querySelector('.video-close-btn');
+
+        // 点击已展开的卡片 → 关闭
+        if(activeVideoBox === this){
+            closeAllVideos();
+            return;
+        }
+
+        // 关闭之前展开的视频（保留卡片收缩状态）
+        if(activeVideoBox){
+            activeVideoBox.querySelector('.video-player-wrap').style.display = 'none';
+            activeVideoBox.querySelector('.video-close-btn').style.display = 'none';
+            activeVideoBox.classList.add('shrink');
+        }
+
+        // 收缩未收缩的卡片
+        cards.forEach(c => { if(!c.classList.contains('shrink')) c.classList.add('shrink'); });
+        videoBoxes.forEach(b => { if(b !== this) b.classList.add('shrink'); });
+        this.classList.remove('shrink');
+        activeVideoBox = this;
+
+        setTimeout(() => {
+            player.style.display = 'block';
+            closeBtn.style.display = 'block';
+            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 350);
+    })
+})
+
+allVideoCloseBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllVideos();
+    })
+})
 </script>
 </body>
 </html>
-
